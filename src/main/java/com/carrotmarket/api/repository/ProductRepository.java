@@ -18,8 +18,9 @@ public class ProductRepository {
     }
 
     // 제목으로 제품을 찾기
-    public void findByTitle(String title) {
+    public List<Product> findByTitle(String title) {
         // 구현 필요
+        return null;
     }
 
     // 모든 제품을 가져오기
