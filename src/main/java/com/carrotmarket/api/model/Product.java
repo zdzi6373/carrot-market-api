@@ -37,13 +37,14 @@ public class Product {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     // Setters
-    void setId(Integer id) { this.id = id; }
+    // ※주의 Id, CreateAt, UpdatgeAt 는 외부에서 변경 하지 말것.
+    public void setId(Integer id) { this.id = id; }
     public void setTitle(String title) { this.title = title; } 
     public void setDescription(String description) { this.description = description; }
     public void setPrice(Integer price) { this.price = price; }
     public void setLocation(String location) { this.location = location; }
     public void setStatus(String status) { this.status = status; }
     public void setViewCount(Integer viewCount) { this.viewCount = viewCount; }
-    void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
