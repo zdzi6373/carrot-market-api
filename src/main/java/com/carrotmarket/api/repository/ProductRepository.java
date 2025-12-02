@@ -19,8 +19,40 @@ public class ProductRepository {
 
     // 제목으로 제품을 찾기
     public List<Product> findByTitle(String title) {
-        // 구현 필요
-        return null;
+        String sql = "SELECT * FROM products WHERE title LIKE ?";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        List<Product> products = new ArrayList<>();
+
+        try {
+            conn = DatabaseUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            // SQL Injection 방지를 위해 PreparedStatement의 파라미터 바인딩 사용
+            pstmt.setString(1, "%" + title + "%");
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Product product = new Product();
+                product.setId(rs.getInt("id"));
+                product.setTitle(rs.getString("title"));
+                product.setDescription(rs.getString("description"));
+                product.setPrice(rs.getInt("price"));
+                product.setLocation(rs.getString("location"));
+                product.setStatus(rs.getString("status"));
+                product.setViewCount(rs.getInt("view_count"));
+                product.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                product.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+                products.add(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseUtil.close(conn, pstmt, rs);
+        }
+        return products;
     }
 
     // 모든 제품을 가져오기
