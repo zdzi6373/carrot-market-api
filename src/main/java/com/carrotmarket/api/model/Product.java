@@ -38,6 +38,7 @@ public class Product {
 
     // Setters
     // ※주의 Id, CreateAt, UpdatgeAt 는 외부에서 변경 하지 말것.
+    // 위험 요소는 완전히 배제하는 것이 옳은가? 아니면 상황에 따라 유연하게 대처하는 것이 옳은가?
     public void setId(Integer id) { this.id = id; }
     public void setTitle(String title) { this.title = title; } 
     public void setDescription(String description) { this.description = description; }
