@@ -1,6 +1,6 @@
 package com.carrotmarket.api.repository;
 
-import com.carrotmarket.api.util.DatabaseUtil;
+import com.carrotmarket.api.util.DatabaseManager;
 import com.carrotmarket.api.model.Product;
 
 import java.sql.Connection;
@@ -28,7 +28,7 @@ public class ProductRepository {
         List<Product> products = new ArrayList<>();
 
         try {
-            conn = DatabaseUtil.getConnection();
+            conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement(sql);
             // SQL Injection 방지를 위해 PreparedStatement의 파라미터 바인딩 사용
             pstmt.setString(1, "%" + title + "%");
@@ -50,7 +50,7 @@ public class ProductRepository {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DatabaseUtil.close(conn, pstmt, rs);
+            DatabaseManager.close(conn, pstmt, rs);
         }
         return products;
     }
@@ -69,7 +69,7 @@ public class ProductRepository {
 
         try {
             // 데이터베이스 연결
-            conn = DatabaseUtil.getConnection();
+            conn = DatabaseManager.getConnection();
             // SQL 준비
             pstmt = conn.prepareStatement(sql);
             // 쿼리 실행
@@ -93,7 +93,7 @@ public class ProductRepository {
             e.printStackTrace();
         } finally {
             // 리소스 정리
-            DatabaseUtil.close(conn, pstmt, rs);
+            DatabaseManager.close(conn, pstmt, rs);
         }
         // 제품 목록 반환
         return products;
