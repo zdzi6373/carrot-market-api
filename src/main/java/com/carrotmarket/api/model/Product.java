@@ -1,7 +1,9 @@
 package com.carrotmarket.api.model;
 
 import java.time.LocalDateTime;
-
+// 제품 모델 클래스
+// DB 구조가 곧 클래스 구조이므로 보안 취약점 요소가 될 수 있음.
+// 실제 서비스에서는 DTO, VO 패턴 등을 활용하여 보안 취약점 요소를 줄이는 것이 좋음.
 public class Product {
     private Integer id;
     private String title;
