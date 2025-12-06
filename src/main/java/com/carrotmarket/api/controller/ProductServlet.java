@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.carrotmarket.api.model.Product;
 import com.carrotmarket.api.service.ProductService;
+import com.carrotmarket.api.util.JsonUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,6 +20,8 @@ public class ProductServlet extends HttpServlet {
 
     // Service 객체 생성
     private ProductService productService = new ProductService();
+
+    private JsonUtil jsonUtil = new JsonUtil();
 
     // 전체 조회
     // 일부 조회(제목 부분일치 검색)
@@ -44,7 +47,7 @@ public class ProductServlet extends HttpServlet {
         
         // Product 리스트를 수동으로 JSON 문자열로 변환
         // GSON, Jackson 같은 라이브러리의 편리함을 느낌
-        String productsJson = productsToJson(products);
+        String productsJson = jsonUtil.productsToJson(products);
         pw.print(productsJson);
     }
 
@@ -63,41 +66,4 @@ public class ProductServlet extends HttpServlet {
         // 구현 필요
     }
 
-    // Product 리스트를 JSON 배열 문자열로 변환하는 헬퍼 메서드
-    private String productsToJson(List<Product> products) {
-        if (products == null || products.isEmpty()) {
-            return "[]";
-        }
-
-        StringBuilder json = new StringBuilder();
-        json.append("[");
-
-        for (int i = 0; i < products.size(); i++) {
-            Product p = products.get(i);
-            json.append("{");
-            json.append("\"id\":").append(p.getId()).append(",");
-            json.append("\"title\":\"").append(escapeJson(p.getTitle())).append("\",");
-            json.append("\"description\":\"").append(escapeJson(p.getDescription())).append("\",");
-            json.append("\"price\":").append(p.getPrice()).append(",");
-            json.append("\"location\":\"").append(escapeJson(p.getLocation())).append("\",");
-            json.append("\"status\":\"").append(escapeJson(p.getStatus())).append("\",");
-            json.append("\"viewCount\":").append(p.getViewCount()).append(",");
-            json.append("\"createdAt\":\"").append(p.getCreatedAt()).append("\",");
-            json.append("\"updatedAt\":\"").append(p.getUpdatedAt()).append("\"");
-            json.append("}");
-
-            if (i < products.size() - 1) {
-                json.append(",");
-            }
-        }
-
-        json.append("]");
-        return json.toString();
-    }
-
-    // JSON 문자열에 포함될 수 있는 특수문자를 이스케이프 처리하는 헬퍼 메서드
-    private String escapeJson(String value) {
-        if (value == null) return "";
-        return value.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
-    }
 }
