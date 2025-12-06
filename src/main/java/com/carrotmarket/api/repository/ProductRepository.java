@@ -13,8 +13,32 @@ import java.util.List;
 public class ProductRepository {
 
     // 제품을 데이터베이스에 저장
-    public void save() {
-        // 구현 필요
+    public Product save(Product product) {
+        String sql = "INSERT INTO products" + 
+                    "(title, description, price, location, status, view_count, created_at, updated_at)" +
+                     " VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, product.getTitle());
+            pstmt.setString(2, product.getDescription());
+            pstmt.setInt(3, product.getPrice());
+            pstmt.setString(4, product.getLocation());
+            pstmt.setString(5, product.getStatus());
+            pstmt.setInt(6, product.getViewCount());
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseManager.close(conn, pstmt, rs);
+        }
+
+        return product;
     }
 
     // 제목으로 제품을 찾기
