@@ -52,8 +52,26 @@ public class ProductServlet extends HttpServlet {
     }
 
     // 등록
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) {
-        // 구현 필요
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        // 요청 콘텐츠 타입 설정(JSON, UTF-8)
+        req.setCharacterEncoding("UTF-8");
+        // 응답 콘텐츠 타입 설정(JSON, UTF-8)
+        res.setContentType("application/json; charset=UTF-8");
+        // 응답 스트림 생성
+        PrintWriter pw = res.getWriter();
+
+        // 요청 본문에서 JSON 데이터 읽기
+        String bodyData = jsonUtil.getBody(req);
+        // JSON 문자열을 Product 객체로 변환
+        Product product = jsonUtil.parseProduct(bodyData);
+
+        // 제품 저장
+        Product saveProduct = productService.save(product);
+        
+        // 저장된 제품을 JSON 문자열로 변환하여 응답
+        String productJson = jsonUtil.productsToJson(List.of(saveProduct));
+        pw.print(productJson);
+
     }
 
     // 수정(id 값으로 특정 제품 수정)
