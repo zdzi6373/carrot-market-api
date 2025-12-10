@@ -75,8 +75,28 @@ public class ProductServlet extends HttpServlet {
     }
 
     // 수정(id 값으로 특정 제품 수정)
-    protected void doPut(HttpServletRequest req, HttpServletResponse res) {
-        // 구현 필요
+    protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        res.setContentType("application/json; charset=UTF-8");
+        PrintWriter pw = res.getWriter();
+
+        // URL에서 ID 추출
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null || pathInfo.equals("/")) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            pw.print("{\"error\":\"제품 ID가 필요합니다.\"}");
+            return;
+        }
+
+        // pathInfo는 "/{id}" 형태이므로, 앞의 '/'를 제거하고 정수로 변환
+        int id = Integer.parseInt(pathInfo.substring(1));
+
+        String bodyData = jsonUtil.getBody(req);
+        Product product = jsonUtil.parseProduct(bodyData);
+
+        Product updatedProduct = productService.update(id, product);
+
+        pw.print(jsonUtil.productsToJson(List.of(updatedProduct)));
     }
 
     // 삭제(id 값으로 특정 제품 삭제)
