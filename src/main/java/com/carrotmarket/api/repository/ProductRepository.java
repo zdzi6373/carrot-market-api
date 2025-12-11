@@ -123,6 +123,48 @@ public class ProductRepository {
         return products;
     }
 
+    public Product findById(int id) {
+        String sql = "SELECT * FROM products WHERE id = ?";
+        Product product = null;
+
+        // JDBC 객체 선언
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            // 데이터베이스 연결
+            conn = DatabaseManager.getConnection();
+            // SQL 준비
+            pstmt = conn.prepareStatement(sql);
+            // 쿼리 실행
+            pstmt.setInt(1, id);
+            rs = pstmt.executeQuery();
+
+            // 결과 처리
+            if (rs.next()) {
+                product = new Product();
+                product.setId(rs.getInt("id"));
+                product.setTitle(rs.getString("title"));
+                product.setDescription(rs.getString("description"));
+                product.setPrice(rs.getInt("price"));
+                product.setLocation(rs.getString("location"));
+                product.setStatus(rs.getString("status"));
+                product.setViewCount(rs.getInt("view_count"));
+                product.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                product.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+                return product;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 리소스 정리
+            DatabaseManager.close(conn, pstmt, rs);
+        }
+
+        return product;
+    }
+
     // 제품을 업데이트
     public void update() {
         // 구현 필요
