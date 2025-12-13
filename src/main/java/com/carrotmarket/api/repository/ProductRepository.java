@@ -6,6 +6,7 @@ import com.carrotmarket.api.model.Product;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public class ProductRepository {
 
     // 제품을 데이터베이스에 저장
-    public Product save(Product product) {
+    public Product save(Product product) throws Exception {
         String sql = "INSERT INTO products" + 
                     "(title, description, price, location, status, view_count, created_at, updated_at)" +
                      " VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
@@ -32,8 +33,9 @@ public class ProductRepository {
             pstmt.setString(5, product.getStatus());
             pstmt.setInt(6, product.getViewCount());
             pstmt.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("제품 등록 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, rs);
         }
@@ -42,7 +44,7 @@ public class ProductRepository {
     }
 
     // 제목으로 제품을 찾기
-    public List<Product> findByTitle(String title) {
+    public List<Product> findByTitle(String title) throws Exception {
         String sql = "SELECT * FROM products WHERE title LIKE ?";
 
         Connection conn = null;
@@ -71,8 +73,9 @@ public class ProductRepository {
                 product.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
                 products.add(product);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("제품 조회 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, rs);
         }
@@ -80,7 +83,7 @@ public class ProductRepository {
     }
 
     // 모든 제품을 가져오기
-    public List<Product> findAll() {
+    public List<Product> findAll() throws Exception {
         String sql = "SELECT * FROM products";
 
         // JDBC 객체 선언
@@ -113,8 +116,9 @@ public class ProductRepository {
                 product.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
                 products.add(product);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("제품 조회 실패", e);
         } finally {
             // 리소스 정리
             DatabaseManager.close(conn, pstmt, rs);
@@ -123,7 +127,7 @@ public class ProductRepository {
         return products;
     }
 
-    public Product findById(int id) {
+    public Product findById(int id)throws Exception {
         String sql = "SELECT * FROM products WHERE id = ?";
         Product product = null;
 
@@ -155,8 +159,9 @@ public class ProductRepository {
                 product.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
                 return product;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("제품 조회 실패", e);
         } finally {
             // 리소스 정리
             DatabaseManager.close(conn, pstmt, rs);
@@ -166,7 +171,7 @@ public class ProductRepository {
     }
 
     // 제품을 업데이트
-    public Integer update(int id, Product product) {
+    public Integer update(int id, Product product) throws Exception {
         String sql = "UPDATE products SET title = ?, description = ?, price = ?, location = ?, status = ?, view_count = ?, updated_at = NOW() WHERE id = ?";
 
         Connection conn = null;
@@ -189,8 +194,9 @@ public class ProductRepository {
             pstmt.setInt(7, id);
             // 쿼리 실행(반드시 1 또는 0 일 것임)
             result = pstmt.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("제품 수정 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, rs);
         }
@@ -199,7 +205,7 @@ public class ProductRepository {
     }
 
     // 제품을 삭제
-    public Integer delete(int id) {
+    public Integer delete(int id) throws Exception {
         String sql = "DELETE FROM products WHERE id = ?";
 
         Connection conn = null;
@@ -215,8 +221,9 @@ public class ProductRepository {
             pstmt.setInt(1, id);
             // 쿼리 실행(반드시 1 또는 0 일 것임)
             result = pstmt.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("제품 삭제 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, null);
         }

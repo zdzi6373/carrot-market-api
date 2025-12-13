@@ -10,23 +10,23 @@ public class ProductService {
     // Repository 객체 생성
     private ProductRepository productRepository = new ProductRepository();
 
-    public List<Product> findByTitle(String title) {
+    public List<Product> findByTitle(String title) throws Exception {
         return productRepository.findByTitle(title);
     }
 
-    public List<Product> findAll() {
+    public List<Product> findAll() throws Exception {
         return productRepository.findAll();
     }
     
-    public Product save(Product product) {
+    public Product save(Product product) throws Exception {
         return productRepository.save(product);
     }
 
-    public Integer update(int id, Product product) {
+    public Integer update(int id, Product product) throws Exception {
         return productRepository.update(id, product);
     }
 
-    public Integer delete(int id) {
+    public Integer delete(int id) throws Exception {
         return productRepository.delete(id);
     }
 }
