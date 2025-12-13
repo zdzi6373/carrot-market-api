@@ -178,13 +178,12 @@ public class ProductRepository {
     }
 
     // 제품을 업데이트
-    public Integer update(int id, Product product) throws Exception {
+    public Product update(int id, Product product) throws Exception {
         String sql = "UPDATE products SET title = ?, description = ?, price = ?, location = ?, status = ?, view_count = ?, updated_at = NOW() WHERE id = ?";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        int result = 0;
 
         try {
             // 데이터베이스 연결
@@ -199,8 +198,7 @@ public class ProductRepository {
             pstmt.setString(5, product.getStatus());
             pstmt.setInt(6, product.getViewCount());
             pstmt.setInt(7, id);
-            // 쿼리 실행(반드시 1 또는 0 일 것임)
-            result = pstmt.executeUpdate();
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("제품 수정 실패", e);
@@ -208,7 +206,7 @@ public class ProductRepository {
             DatabaseManager.close(conn, pstmt, rs);
         }
 
-        return result;
+        return product;
     }
 
     // 제품을 삭제

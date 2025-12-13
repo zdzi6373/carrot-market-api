@@ -85,6 +85,7 @@ public class ProductServlet extends HttpServlet {
     }
 
     // 수정(id 값으로 특정 제품 수정)
+    // req에는 변경되지 않은 값도 NULL이 아닌 수정을 위해 조회한 값이 그대로 들어온다고 가정 함.
     protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         res.setContentType("application/json; charset=UTF-8");
@@ -106,7 +107,7 @@ public class ProductServlet extends HttpServlet {
             // JSON 문자열을 Product 객체로 변환
             Product product = jsonUtil.parseProduct(bodyData);
 
-            Integer result = productService.update(id, product);
+            Product result = productService.update(id, product);
 
             pw.print(result);
         } catch (Exception e) {

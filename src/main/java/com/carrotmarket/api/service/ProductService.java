@@ -22,7 +22,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Integer update(int id, Product product) throws Exception {
+    public Product update(int id, Product product) throws Exception {
         return productRepository.update(id, product);
     }
 
