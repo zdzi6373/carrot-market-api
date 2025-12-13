@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.util.Properties;
 
 // DB 연결을 한곳에서 관리.
-public class DatabaseUtil {
+public class DatabaseManager {
 
     // DB 정보를 담을 변수, 상수로 선언
     private static final String URL;
@@ -28,7 +28,7 @@ public class DatabaseUtil {
         // DatabaseUtil.class는 큰 의미 없음
         // 진짜 목적은 ClassLoader의 getResourceAsStream() 메서드를 쓰기 위함.
         // 상대경로로 db.properties 파일을 읽어옴
-        try (InputStream input = DatabaseUtil.class.getClassLoader().getResourceAsStream("db.properties")) {
+        try (InputStream input = DatabaseManager.class.getClassLoader().getResourceAsStream("db.properties")) {
             
             // 파일이 존재하지 않을 경우 예외 처리
             if (input == null) {
