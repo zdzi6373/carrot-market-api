@@ -199,7 +199,28 @@ public class ProductRepository {
     }
 
     // 제품을 삭제
-    public void delete() {
-        // 구현 필요
+    public Integer delete(int id) {
+        String sql = "DELETE FROM products WHERE id = ?";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        int result = 0;
+
+        try {
+            // 데이터베이스 연결
+            conn = DatabaseManager.getConnection();
+            // SQL 준비
+            pstmt = conn.prepareStatement(sql);
+            // 바인딩
+            pstmt.setInt(1, id);
+            // 쿼리 실행(반드시 1 또는 0 일 것임)
+            result = pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseManager.close(conn, pstmt, null);
+        }
+
+        return result;
     }
 }

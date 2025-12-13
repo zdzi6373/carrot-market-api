@@ -25,4 +25,8 @@ public class ProductService {
     public Integer update(int id, Product product) {
         return productRepository.update(id, product);
     }
+
+    public Integer delete(int id) {
+        return productRepository.delete(id);
+    }
 }
