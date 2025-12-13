@@ -33,6 +33,13 @@ public class ProductRepository {
             pstmt.setString(5, product.getStatus());
             pstmt.setInt(6, product.getViewCount());
             pstmt.executeUpdate();
+
+            // 생성된 제품의 ID 가져오기
+            rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                int generatedId = rs.getInt(1);
+                product.setId(generatedId);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("제품 등록 실패", e);
