@@ -75,8 +75,12 @@ public class ProductServlet extends HttpServlet {
             Product saveProduct = productService.save(product);
             
             // 저장된 제품을 JSON 문자열로 변환하여 응답
-            String productJson = jsonUtil.productsToJson(List.of(saveProduct));
+            String productJson = jsonUtil.productToJson(saveProduct);
             pw.print(productJson);
+            
+        } catch (IllegalArgumentException e) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            pw.print("{\"error\":\"" + e.getMessage() + "\"}");
         } catch (Exception e) {
             e.printStackTrace();
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -107,9 +111,14 @@ public class ProductServlet extends HttpServlet {
             // JSON 문자열을 Product 객체로 변환
             Product product = jsonUtil.parseProduct(bodyData);
 
-            Product result = productService.update(id, product);
+            Product updatedProduct = productService.update(id, product);
 
-            pw.print(result);
+            // 객체를 JSON으로 변환해서 리턴
+            pw.print(jsonUtil.productToJson(updatedProduct));
+
+        } catch(IllegalArgumentException e) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            pw.print("{\"error\":\"" + e.getMessage() + "\"}");
         } catch (Exception e) {
             e.printStackTrace();
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -137,7 +146,13 @@ public class ProductServlet extends HttpServlet {
 
             Integer result = productService.delete(id);
 
-            pw.print(result);
+            if (result == 1) {
+                // 명확한 JSON 메시지 반환
+                pw.print("{\"message\":\"삭제되었습니다.\", \"id\":" + id + "}");
+            } else {
+                res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                pw.print("{\"error\":\"해당 상품이 없습니다.\"}");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -178,7 +178,7 @@ public class ProductRepository {
     }
 
     // 제품을 업데이트
-    public Product update(int id, Product product) throws Exception {
+    public Integer update(int id, Product product) throws Exception {
         String sql = "UPDATE products SET title = ?, description = ?, price = ?, location = ?, status = ?, view_count = ?, updated_at = NOW() WHERE id = ?";
 
         Connection conn = null;
@@ -198,15 +198,14 @@ public class ProductRepository {
             pstmt.setString(5, product.getStatus());
             pstmt.setInt(6, product.getViewCount());
             pstmt.setInt(7, id);
-            pstmt.executeUpdate();
+            // 결과 바로 리턴(0 아니면 1)
+            return pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("제품 수정 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, rs);
         }
-
-        return product;
     }
 
     // 제품을 삭제
