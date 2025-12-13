@@ -90,13 +90,14 @@ public class ProductServlet extends HttpServlet {
 
         // pathInfo는 "/{id}" 형태이므로, 앞의 '/'를 제거하고 정수로 변환
         int id = Integer.parseInt(pathInfo.substring(1));
-
+        // 요청 본문에서 JSON 데이터 읽기
         String bodyData = jsonUtil.getBody(req);
+        // JSON 문자열을 Product 객체로 변환
         Product product = jsonUtil.parseProduct(bodyData);
 
-        Product updatedProduct = productService.update(id, product);
+        Integer result = productService.update(id, product);
 
-        pw.print(jsonUtil.productsToJson(List.of(updatedProduct)));
+        pw.print(result);
     }
 
     // 삭제(id 값으로 특정 제품 삭제)

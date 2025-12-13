@@ -166,8 +166,36 @@ public class ProductRepository {
     }
 
     // 제품을 업데이트
-    public void update() {
-        // 구현 필요
+    public Integer update(int id, Product product) {
+        String sql = "UPDATE products SET title = ?, description = ?, price = ?, location = ?, status = ?, view_count = ?, updated_at = NOW() WHERE id = ?";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int result = 0;
+
+        try {
+            // 데이터베이스 연결
+            conn = DatabaseManager.getConnection();
+            // SQL 준비
+            pstmt = conn.prepareStatement(sql);
+            // 바인딩
+            pstmt.setString(1, product.getTitle());
+            pstmt.setString(2, product.getDescription());
+            pstmt.setInt(3, product.getPrice());
+            pstmt.setString(4, product.getLocation());
+            pstmt.setString(5, product.getStatus());
+            pstmt.setInt(6, product.getViewCount());
+            pstmt.setInt(7, id);
+            // 쿼리 실행(반드시 1 또는 0 일 것임)
+            result = pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseManager.close(conn, pstmt, rs);
+        }
+
+        return result;
     }
 
     // 제품을 삭제
