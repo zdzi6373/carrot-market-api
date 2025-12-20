@@ -14,7 +14,7 @@ import java.util.List;
 public class ProductRepository {
 
     // 제품을 데이터베이스에 저장
-    public Product save(Product product) throws Exception {
+    public Product save(Product product) {
         String sql = "INSERT INTO products" + 
                     "(title, description, price, location, status, view_count, created_at, updated_at)" +
                      " VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
@@ -51,7 +51,7 @@ public class ProductRepository {
     }
 
     // 제목으로 제품을 찾기
-    public List<Product> findByTitle(String title) throws Exception {
+    public List<Product> findByTitle(String title) {
         String sql = "SELECT * FROM products WHERE title LIKE ?";
 
         Connection conn = null;
@@ -90,7 +90,7 @@ public class ProductRepository {
     }
 
     // 모든 제품을 가져오기
-    public List<Product> findAll() throws Exception {
+    public List<Product> findAll() {
         String sql = "SELECT * FROM products";
 
         // JDBC 객체 선언
@@ -134,7 +134,7 @@ public class ProductRepository {
         return products;
     }
 
-    public Product findById(int id)throws Exception {
+    public Product findById(int id) {
         String sql = "SELECT * FROM products WHERE id = ?";
         Product product = null;
 
@@ -178,7 +178,7 @@ public class ProductRepository {
     }
 
     // 제품을 업데이트
-    public Integer update(int id, Product product) throws Exception {
+    public Integer update(int id, Product product) {
         String sql = "UPDATE products SET title = ?, description = ?, price = ?, location = ?, status = ?, view_count = ?, updated_at = NOW() WHERE id = ?";
 
         Connection conn = null;
@@ -209,7 +209,7 @@ public class ProductRepository {
     }
 
     // 제품을 삭제
-    public Integer delete(int id) throws Exception {
+    public Integer delete(int id) {
         String sql = "DELETE FROM products WHERE id = ?";
 
         Connection conn = null;

@@ -10,7 +10,7 @@ public class ProductService {
     // Repository 객체 생성
     private ProductRepository productRepository = new ProductRepository();
 
-        private void validateProduct(Product product) {
+    private void validateProduct(Product product) {
         if (product.getTitle() == null || product.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("제목은 필수 입력값입니다.");
         }
@@ -20,26 +20,26 @@ public class ProductService {
         if (product.getPrice() < 0) {
             throw new IllegalArgumentException("가격은 0원 이상이어야 합니다.");
         }
-        // viewCount는 null이면 0으로 초기화해주는 센스 (선택사항)
+        // viewCount가 null 이면 0으로 초기화
         if (product.getViewCount() == null) {
             product.setViewCount(0);
         }
     }
 
-    public List<Product> findByTitle(String title) throws Exception {
+    public List<Product> findByTitle(String title) {
         return productRepository.findByTitle(title);
     }
 
-    public List<Product> findAll() throws Exception {
+    public List<Product> findAll() {
         return productRepository.findAll();
     }
     
-    public Product save(Product product) throws Exception {
+    public Product save(Product product) {
         validateProduct(product);
         return productRepository.save(product);
     }
 
-    public Product update(int id, Product product) throws Exception {
+    public Product update(int id, Product product) {
         validateProduct(product);
 
         Integer result = productRepository.update(id, product);
@@ -53,7 +53,7 @@ public class ProductService {
         }
     }
 
-    public Integer delete(int id) throws Exception {
+    public Integer delete(int id) {
         return productRepository.delete(id);
     }
 }
