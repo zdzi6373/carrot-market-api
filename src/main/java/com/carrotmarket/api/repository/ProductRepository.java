@@ -41,7 +41,6 @@ public class ProductRepository {
                 product.setId(generatedId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("제품 등록 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, rs);
@@ -81,7 +80,6 @@ public class ProductRepository {
                 products.add(product);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("제품 조회 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, rs);
@@ -124,7 +122,6 @@ public class ProductRepository {
                 products.add(product);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("제품 조회 실패", e);
         } finally {
             // 리소스 정리
@@ -167,7 +164,6 @@ public class ProductRepository {
                 return product;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("제품 조회 실패", e);
         } finally {
             // 리소스 정리
@@ -201,7 +197,6 @@ public class ProductRepository {
             // 결과 바로 리턴(0 아니면 1)
             return pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("제품 수정 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, rs);
@@ -226,7 +221,6 @@ public class ProductRepository {
             // 쿼리 실행(반드시 1 또는 0 일 것임)
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("제품 삭제 실패", e);
         } finally {
             DatabaseManager.close(conn, pstmt, null);

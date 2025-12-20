@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 // DB 연결을 한곳에서 관리.
 public class DatabaseManager {
@@ -16,6 +18,9 @@ public class DatabaseManager {
     private static final String USERNAME;
     private static final String PASSWORD;
     private static final String DRIVER;
+
+    private static final Logger logger = Logger.getLogger(DatabaseManager.class.getName());
+
 
     // static 블록
     // 처음 사용해보는 방식
@@ -71,7 +76,7 @@ public class DatabaseManager {
             try {
                 conn.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Connection close error", e);
             }
         }
     }
@@ -82,7 +87,7 @@ public class DatabaseManager {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Statement close error", e);
             }
         }
     }
@@ -93,7 +98,7 @@ public class DatabaseManager {
             try {
                 rs.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "ResultSet close error", e);
             }
         }
     }

@@ -3,6 +3,8 @@ package com.carrotmarket.api.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.carrotmarket.api.model.Product;
 import com.carrotmarket.api.service.ProductService;
@@ -22,6 +24,8 @@ public class ProductServlet extends HttpServlet {
     private ProductService productService = new ProductService();
 
     private JsonUtil jsonUtil = new JsonUtil();
+    
+    private static final Logger logger = Logger.getLogger(ProductServlet.class.getName());
 
     // 전체 조회
     // 일부 조회(제목 부분일치 검색)
@@ -50,7 +54,7 @@ public class ProductServlet extends HttpServlet {
             String productsJson = jsonUtil.productsToJson(products);
             pw.print(productsJson);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in doGet", e);
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pw.print("{\"error\":\"서버 오류 발생\"}");
         }
@@ -82,7 +86,7 @@ public class ProductServlet extends HttpServlet {
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             pw.print("{\"error\":\"" + e.getMessage() + "\"}");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in doPost", e);
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pw.print("{\"error\":\"서버 오류 발생\"}");
         }
@@ -120,7 +124,7 @@ public class ProductServlet extends HttpServlet {
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             pw.print("{\"error\":\"" + e.getMessage() + "\"}");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in doPut", e);
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pw.print("{\"error\":\"서버 오류 발생\"}");
         }
@@ -154,7 +158,7 @@ public class ProductServlet extends HttpServlet {
                 pw.print("{\"error\":\"해당 상품이 없습니다.\"}");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in doDelete", e);
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pw.print("{\"error\":\"서버 오류 발생\"}");
         }
