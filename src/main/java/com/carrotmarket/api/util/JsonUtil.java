@@ -3,6 +3,9 @@ package com.carrotmarket.api.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 import com.carrotmarket.api.model.Product;
 
@@ -18,39 +21,37 @@ public class JsonUtil {
             return "[]";
         }
 
-        StringBuilder json = new StringBuilder();
-        json.append("[");
-
-        for (int i = 0; i < products.size(); i++) {
-            
-            json.append(productToJson(products.get(i)));
-
-            if (i < products.size() - 1) {
-                json.append(",");
-            }
-        }
-
-        json.append("]");
-        return json.toString();
+        return products.stream() // 스트림 생성
+                .map(this::productToJson) // 중간 연산: 각 Product 객체를 JSON 문자열로 변환
+                .collect(Collectors.joining(",", "[", "]")); // 최종 연산: 쉼표로 연결하고 대괄호로 감싸기
     }
 
     // 단일 Product 객체를 JSON 문자열로 변환하는 헬퍼 메서드
     public String productToJson(Product p) {
         if (p == null) return "{}";
 
-        StringBuilder json = new StringBuilder();
-        json.append("{");
-        json.append("\"id\":").append(p.getId()).append(",");
-        json.append("\"title\":\"").append(escapeJson(p.getTitle())).append("\",");
-        json.append("\"description\":\"").append(escapeJson(p.getDescription())).append("\",");
-        json.append("\"price\":").append(p.getPrice()).append(",");
-        json.append("\"location\":\"").append(escapeJson(p.getLocation())).append("\",");
-        json.append("\"status\":\"").append(escapeJson(p.getStatus())).append("\",");
-        json.append("\"viewCount\":").append(p.getViewCount()).append(",");
-        json.append("\"createdAt\":\"").append(p.getCreatedAt()).append("\",");
-        json.append("\"updatedAt\":\"").append(p.getUpdatedAt()).append("\"");
-        json.append("}");
-        return json.toString();
+        // entrySet 이용을 위해 product 객체를 Map 으로 변환
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", p.getId());
+        map.put("title", p.getTitle());
+        map.put("description", p.getDescription());
+        map.put("price", p.getPrice());
+        map.put("location", p.getLocation());
+        map.put("status", p.getStatus());
+        map.put("viewCount", p.getViewCount());
+        map.put("createdAt", p.getCreatedAt());
+        map.put("updatedAt", p.getUpdatedAt());
+
+        return map.entrySet().stream() // entrySet은 Map에만 사용가능(Key : Value 를 하나씩 stream함)
+                .map(entry -> {
+                    String key = "\"" + entry.getKey() + "\""; // Key 값을 ""로 감싸기 위한 장치
+                    Object value = entry.getValue(); // Value 값 취득
+                    // Value값의 타입에 따라 처리 String 인 경우 ""로 감싸 줌
+                    String valueStr = (value instanceof Number) ? String.valueOf(value) : "\"" + escapeJson(value != null ? String.valueOf(value) : "") + "\"";
+                    return key + ":" + valueStr; // Key : Value 형태로 리턴
+                })
+                // 상기 entry들을 , 로 구분하여 collect 해줌 가장 앞부분과 뒷부분을 중괄호 처리해줌 == JSON 형태으로 만들어 줌
+                .collect(Collectors.joining(",", "{", "}"));
     }
 
     // JSON 문자열에 포함될 수 있는 특수문자를 이스케이프 처리하는 헬퍼 메서드
