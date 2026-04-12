@@ -28,3 +28,10 @@
 | **서버** | Tomcat 10 | Jakarta EE 지원 |
 | **DB** | PostgreSQL | 익숙한 DB로 학습 집중 |
 | **IDE** | VS Code + Java Extension | (선택 사항) |
+
+## 문서
+
+| 문서 | 설명 |
+|------|------|
+| [OCI 서버 세팅 가이드](docs/oci_web_server_setup_guide.md) | Ubuntu 기반 OCI 서버에 Tomcat + PostgreSQL 환경 구축 |
+| [CI/CD 파이프라인 구축 가이드](docs/cicd_pipeline_setup_guide.md) | GitHub Actions를 이용한 자동 배포 파이프라인 구성 |
