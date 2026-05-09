@@ -187,3 +187,156 @@ sudo iptables -L -n -v --line-numbers | grep 8080
 # 3. ★ 규칙 영구 저장 (Minimal 버전 필수 단계)
 sudo netfilter-persistent save
 ```
+
+---
+
+## 6. Domain Setup (DuckDNS)
+
+무료 동적 DNS 서비스인 DuckDNS를 이용해 OCI 서버 공인 IP에 도메인을 연결합니다.
+
+### 6-1. DuckDNS 도메인 등록
+
+1. [https://www.duckdns.org](https://www.duckdns.org) 접속 후 로그인
+2. 원하는 서브도메인 입력 (예: `carrot-market`) → **add domain** 클릭
+3. **current ip** 항목에 OCI 서버 공인 IP 입력 후 **update ip** 클릭
+4. 토큰 값 복사 (Certbot 인증 시 필요)
+
+### 6-2. IP 자동 갱신 스크립트 (선택사항)
+
+OCI Free Tier는 IP가 고정이므로 필수는 아니지만, 변동 IP 환경에서는 아래 스크립트로 자동 갱신합니다.
+
+```bash
+# 스크립트 생성
+mkdir -p ~/duckdns
+nano ~/duckdns/duck.sh
+```
+
+```bash
+#!/bin/bash
+echo url="https://www.duckdns.org/update?domains=YOUR_DOMAIN&token=YOUR_TOKEN&ip=" \
+  | curl -k -o ~/duckdns/duck.log -K -
+```
+
+```bash
+chmod +x ~/duckdns/duck.sh
+
+# crontab으로 5분마다 실행
+crontab -e
+# 아래 줄 추가
+*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1
+```
+
+---
+
+## 7. Nginx Setup (Reverse Proxy)
+
+외부 80/443 트래픽을 앞단에서 받아 Tomcat(localhost:8080)으로 전달하는 리버스 프록시를 구성합니다.
+
+### 7-1. Nginx 설치
+
+```bash
+sudo apt update
+sudo apt install nginx -y
+sudo systemctl enable nginx
+sudo systemctl start nginx
+```
+
+### 7-2. 방화벽에 80/443 포트 추가
+
+**OCI Console:**
+- Ingress Rules에 TCP 80, TCP 443 추가
+
+**Ubuntu 내부 방화벽:**
+```bash
+sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
+sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT
+sudo netfilter-persistent save
+```
+
+### 7-3. Nginx 설정 파일 작성
+
+```bash
+sudo nano /etc/nginx/sites-available/carrot-market
+```
+
+```nginx
+server {
+    listen 80;
+    server_name YOUR_DOMAIN.duckdns.org;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash
+# 설정 활성화
+sudo ln -s /etc/nginx/sites-available/carrot-market /etc/nginx/sites-enabled/
+sudo nginx -t        # 문법 검사
+sudo systemctl reload nginx
+```
+
+---
+
+## 8. HTTPS Setup (Certbot + Let's Encrypt)
+
+Certbot을 이용해 Let's Encrypt 무료 SSL 인증서를 발급받고 Nginx에 연동합니다.
+
+### 8-1. Certbot 설치
+
+```bash
+sudo apt install certbot python3-certbot-nginx -y
+```
+
+### 8-2. 인증서 발급
+
+```bash
+sudo certbot --nginx -d YOUR_DOMAIN.duckdns.org
+```
+
+진행 중 이메일 입력 및 약관 동의 후 발급이 완료되면 Certbot이 Nginx 설정을 자동으로 수정합니다.
+
+### 8-3. 자동 갱신 확인
+
+Let's Encrypt 인증서는 90일마다 만료되며, Certbot이 자동 갱신 타이머를 등록합니다.
+
+```bash
+# 자동 갱신 타이머 확인
+sudo systemctl status certbot.timer
+
+# 갱신 테스트 (실제 발급 없이 시뮬레이션)
+sudo certbot renew --dry-run
+```
+
+### 8-4. 최종 Nginx 설정 (Certbot 적용 후)
+
+Certbot 적용 후 `/etc/nginx/sites-available/carrot-market` 파일은 아래와 같이 변경됩니다.
+
+```nginx
+server {
+    listen 80;
+    server_name YOUR_DOMAIN.duckdns.org;
+    return 301 https://$host$request_uri;  # HTTP → HTTPS 리다이렉트
+}
+
+server {
+    listen 443 ssl;
+    server_name YOUR_DOMAIN.duckdns.org;
+
+    ssl_certificate /etc/letsencrypt/live/YOUR_DOMAIN.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN.duckdns.org/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
