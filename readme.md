@@ -1,5 +1,7 @@
 # Carrot Market API - Core Java Clone
 
+> [日本語版はこちら](readme_ja.md)
+
 > Spring과 ORM 없이, **순수 Java**로 구현하는 당근마켓 백엔드 API
 
 ## 프로젝트를 시작한 이유
@@ -28,6 +30,10 @@
 | **서버** | Tomcat 10 | Jakarta EE 지원 |
 | **DB** | PostgreSQL | 익숙한 DB로 학습 집중 |
 | **IDE** | VS Code + Java Extension | (선택 사항) |
+
+## 프로젝트 현황
+
+> 현재 다른 활동으로 인해 개발을 일시 중지하고 있습니다.
 
 ## 문서
 
